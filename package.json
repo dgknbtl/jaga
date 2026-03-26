@@ -1,6 +1,6 @@
 {
   "name": "jagajs",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The ultimate ultra-lightweight, context-aware security engine for HTML templates. Zero-dependency XSS protection for modern web apps.",
   "repository": {
     "type": "git",
@@ -11,14 +11,19 @@
   },
   "homepage": "https://github.com/dgknbtl/jaga#readme",
   "type": "module",
-  "main": "./dist/jaga.cjs",
-  "module": "./dist/jaga.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/jaga.js",
-      "require": "./dist/jaga.cjs"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./sanitize": {
+      "types": "./dist/sanitize.d.ts",
+      "import": "./dist/sanitize.js",
+      "require": "./dist/sanitize.cjs"
     }
   },
   "files": [
@@ -35,13 +40,16 @@
   },
   "keywords": [
     "xss",
+    "xss-protection",
     "security",
+    "html-sanitizer",
+    "sanitize",
     "template",
     "tagged-templates",
     "html",
-    "sanitize",
     "trusted-types",
-    "escaper",
+    "csp-nonce",
+    "ssr",
     "zero-dependency",
     "vanilla-js"
   ],

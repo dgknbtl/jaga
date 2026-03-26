@@ -15,6 +15,7 @@
 
 - **Smart Context Awareness**: Automatically identifies if data is in a `<div>`, an `href`, or an `onclick`.
 - **Built-in URL Sanitization**: Proactively blocks `javascript:` and other dangerous protocols.
+- **HTML Sanitizer**: SSR-native allowlist sanitizer (`jagajs/sanitize`) — zero dependencies, works in Node.js, Bun, Deno.
 - **Smart Minifier**: Automatically cleans up unnecessary whitespace between HTML tags (intelligent enough to preserve `<pre>` and `<textarea>`).
 - **DX Guardrails**: Helpful console warnings during development when a security risk or non-CSP-compliant pattern is detected.
 - **Nano-sized**: Less than **1KB** gzipped. No dependencies, no bloat.
@@ -73,6 +74,27 @@ import { j, nonce } from "jagajs";
 
 const myNonce = nonce();
 const script = j`<script nonce="${myNonce}">console.log('Safe script');</script>`;
+```
+
+### HTML Sanitizer (SSR-Ready)
+
+Strip dangerous tags and attributes from rich text, with zero dependencies — works in Node.js, Bun, and Deno:
+
+```javascript
+import { sanitize } from "jagajs/sanitize";
+
+// Safe rich text from a WYSIWYG editor
+const clean = sanitize(userHtml);
+
+// Custom allowlist
+const strict = sanitize(userHtml, {
+  allowedTags: ["b", "i", "a", "p"],
+  allowedAttrs: { "a": ["href", "title"] },
+});
+
+// Combine with Jaga core
+import { j } from "jagajs";
+const html = j`<article>${sanitize(richText)}</article>`;
 ```
 
 ---
