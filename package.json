@@ -1,0 +1,44 @@
+{
+  "name": "jaga",
+  "version": "1.0.0",
+  "description": "Ultra-lightweight, zero-dependency, and context-aware tagged template engine for secure HTML generation.",
+  "type": "module",
+  "main": "./dist/jaga.cjs",
+  "module": "./dist/jaga.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/jaga.js",
+      "require": "./dist/jaga.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly --outDir dist",
+    "test": "vitest run",
+    "playground": "vite playground",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "xss",
+    "security",
+    "template",
+    "tagged-templates",
+    "html",
+    "sanitize",
+    "trusted-types",
+    "escaper",
+    "zero-dependency",
+    "vanilla-js"
+  ],
+  "author": "Dogukan Batal <dogukanbatal@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.7",
+    "happy-dom": "^17.1.8"
+  }
+}
