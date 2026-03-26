@@ -1,18 +1,24 @@
 # 🛡️ Jaga
 
-**The Zero-Dependency, Security-First Tagged Template Engine.**
+[![npm version](https://img.shields.io/npm/v/jaga.svg?style=flat-square)](https://www.npmjs.com/package/jaga)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/jaga?label=size&style=flat-square)](https://bundlephobia.com/result?p=jaga)
+[![license](https://img.shields.io/npm/l/jaga.svg?style=flat-square)](https://github.com/dogukanbatal/jaga/blob/main/LICENSE)
+[![typed](https://img.shields.io/badge/types-TypeScript-blue?style=flat-square)](https://www.typescriptlang.org/)
 
-Jaga (meaning "to guard" or "protect") is an ultra-lightweight (<1KB), build-step-optional tagged template engine designed to prevent XSS (Cross-Site Scripting) by default when generating HTML in the browser.
+**Jaga** (named after the word for *"guard"* or *"protect"*) is an ultra-lightweight, zero-dependency engine that brings **Context-Aware Security** to your HTML templates. It's the invisible guardian between your user's data and your application's DOM.
 
-## 🚀 Highlights
+> "Stop manually escaping. Stop overthinking XSS. Just let Jaga guard your templates."
 
-- 🧠 **Smart Context Awareness**: Automatically detects if a variable is in an attribute or text.
-- 🛡️ **URL Sanitization**: Blocks `javascript:` protocols in `href`/`src` by default.
-- ⚠️ **Dev-Mode Warnings**: Proactive console alerts for security risks (Zero-bloat in Production).
-- 🪶 **Ultra-Lightweight**: < 1KB (Gzipped: ~900 bytes).
-- 🌍 **Trusted Types**: Built-in support for Trusted Types API.
-- 🔐 **CSP Ready**: Includes a `nonce()` helper for secure inline scripts.
-- 🧬 **Zero-Dependency**: No external dependencies.
+---
+
+## ✨ Features
+
+- 🧠 **Smart Context Awareness**: Automatically identifies if data is in a `<div>`, an `href`, or an `onclick`.
+- 🛡️ **Built-in URL Sanitization**: Proactively blocks `javascript:` and other dangerous protocols.
+- ⚠️ **DX Guardrails**: Helpful console warnings during development when a security risk is neutralized.
+- 🪶 **Nano-sized**: Less than **1KB** gzipped. No dependencies, no bloat.
+- 🌍 **Trusted Types Native**: Built-in support for the browser's native `TrustedHTML` API.
+- 🔐 **CSP Ready**: Cryptographically strong `nonce()` helper included for secure inline scripts.
 
 ## 📦 Installation
 
@@ -20,45 +26,53 @@ Jaga (meaning "to guard" or "protect") is an ultra-lightweight (<1KB), build-ste
 npm install jaga
 ```
 
-## 🛠️ Usage
-
-### Smart Context & Safety
-
-Jaga knows where your data goes. It automatically handles attribute breakouts and dangerous protocols.
+## 🛠️ Quick Start
 
 ```javascript
 import { j } from 'jaga';
 
-// Dangerous protocols are blocked in href/src
-const link = j`<a href="${"javascript:alert(1)"}">Click</a>`; 
-// Result: <a href="about:blank">Click</a>
+// 1. Text is automatically escaped
+const userInp = "<img src=x onerror=alert(1)>";
+const title = j`<h1>Welcome, ${userInp}</h1>`; 
+// Result: <h1>Welcome, &lt;img src=x...&gt;</h1>
 
-// Attribute breakouts are prevented
-const div = j`<div id="${'prop" onclick="alert(1)'}"></div>`;
-// Result: <div id="prop&quot; onclick=&quot;alert(1)&quot;"></div>
+// 2. Dangerous protocols are blocked in URLs
+const url = "javascript:alert('XSS')";
+const link = j`<a href="${url}">Click Me</a>`;
+// Result: <a href="about:blank">...</a> (and a dev-warning in console!)
+
+// 3. Attribute breakouts are prevented
+const id = 'my-id" onclick="alert(1)';
+const div = j`<div id="${id}"></div>`;
+// Result: <div id="my-id&quot; onclick=&quot;alert(1)&quot;"></div>
 ```
 
-### CSP Nonce Support
+### Advanced: List Rendering
+
+Jaga handles arrays seamlessly and securely:
+
+```javascript
+const items = ['Safe', '<b>Bold</b>', '<i>Italic</i>'];
+const list = j`<ul>${items.map(i => j`<li>${i}</li>`)}</ul>`;
+```
+
+### Secure Nonce for CSP
 
 ```javascript
 import { j, nonce } from 'jaga';
 
 const myNonce = nonce();
-const script = j`<script nonce="${myNonce}">...</script>`;
+const script = j`<script nonce="${myNonce}">console.log('Safe script');</script>`;
 ```
 
-### Lists and Loops
+---
 
-```javascript
-const items = ['Apple', 'Banana', 'Cherry'];
+## 🗺️ Roadmap
 
-const list = j`
-  <ul>
-    ${items.map(item => j`<li>${item}</li>`)}
-  </ul>
-`;
-```
+- [ ] **Phase 3**: `j.json()` for secure JSON injection into scripts.
+- [ ] **Phase 3**: Smart Whitespace Minifier for production builds.
+- [ ] **Phase 4**: `jaga/sanitize` – An opt-in, ultra-lightweight HTML sanitizer (Allowlist-based).
 
 ## 📜 License
 
-MIT
+MIT © [Dogukan Batal](https://github.com/dogukanbatal)

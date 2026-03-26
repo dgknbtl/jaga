@@ -1,7 +1,7 @@
 {
   "name": "jaga",
   "version": "1.0.0",
-  "description": "Ultra-lightweight, zero-dependency, and context-aware tagged template engine for secure HTML generation.",
+  "description": "The ultimate ultra-lightweight, context-aware security engine for HTML templates. Zero-dependency XSS protection for modern web apps.",
   "type": "module",
   "main": "./dist/jaga.cjs",
   "module": "./dist/jaga.js",
