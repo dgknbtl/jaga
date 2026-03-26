@@ -149,10 +149,12 @@ Jaga's `JagaHTML` wrapper is designed to integrate cleanly with the browser's [T
 
 ```javascript
 const policy = trustedTypes.createPolicy("jaga", {
-  createHTML: (html) => html, // Jaga already cleaned it
+  // Best Practice: Always sanitize inside the policy itself!
+  createHTML: (html) => sanitize(html).toString(),
 });
 
-element.innerHTML = policy.createHTML(sanitize(userHtml).toString());
+// Now you can safely pass even untrusted strings:
+element.innerHTML = policy.createHTML(untrustedHtml);
 ```
 
 > Native `TrustedTypePolicy` integration (auto-wrapping) is planned for a future release.
