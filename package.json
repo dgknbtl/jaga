@@ -1,7 +1,15 @@
 {
   "name": "jagajs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The ultimate ultra-lightweight, context-aware security engine for HTML templates. Zero-dependency XSS protection for modern web apps.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dgknbtl/jaga.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dgknbtl/jaga/issues"
+  },
+  "homepage": "https://github.com/dgknbtl/jaga#readme",
   "type": "module",
   "main": "./dist/jaga.cjs",
   "module": "./dist/jaga.js",
