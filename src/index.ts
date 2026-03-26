@@ -86,7 +86,7 @@ export const j: JagaRenderer = function(strings: TemplateStringsArray, ...values
     let context: 'text' | 'attr' | 'url' = 'text';
 
     // Context Detection Algorithm
-    const attrMatch = prev.match(/([a-zA-Z-]+)\s*=\s*(?:['"]?)$/);
+    const attrMatch = prev.match(/([a-zA-Z-]+)\s*=\s*['"]?[^>]*$/);
     if (attrMatch) {
       const attrName = attrMatch[1].toLowerCase();
       context = (attrName === 'href' || attrName === 'src') ? 'url' : 'attr';

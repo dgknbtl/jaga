@@ -42,6 +42,15 @@ describe('Jaga Phase 1: Smart Context Awareness', () => {
       const malicious = "javaSCRIPT:alert(1)";
       expect(j`<a href="${malicious}">Link</a>`.toString()).toBe('<a href="about:blank">Link</a>');
     });
+
+    it('should block protocols even if there are spaces in the attribute value', () => {
+      // This is the bypass attempt
+      const malicious = "  javascript:alert(1)";
+      expect(j`<a href="${malicious}">Link</a>`.toString()).toBe('<a href="about:blank">Link</a>');
+      
+      // Breaking the regex with space in the template itself
+      expect(j`<a href=" ${malicious}">Link</a>`.toString()).toBe('<a href=" about:blank">Link</a>');
+    });
   });
 
   describe('Mixed Contexts', () => {
