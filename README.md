@@ -11,7 +11,7 @@
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Smart Context Awareness**: Automatically identifies if data is in a `<div>`, an `href`, or an `onclick`.
 - **Built-in URL Sanitization**: Proactively blocks `javascript:` and other dangerous protocols.
@@ -23,23 +23,23 @@
 
 ---
 
-## 🎯 Why Jaga?
+## Why Jaga?
 
 Modern frameworks (React, Vue, Angular) are great at escaping data in their templates, but they have **blind spots** where they leave security entirely to the developer. Jaga is built to fill those gaps.
 
-| Environment | Secure Context | **Blind Spot (XSS Risk)** | Jaga's Solution |
-|---|---|---|---|
-| **SSR / Node.js** | - | String Templates | `j` template tag ✅ Native |
-| **React** | JSX `{}` | `dangerouslySetInnerHTML` | `sanitize(html).toString()` |
-| **Vue** | `{{ }}` | `v-html` | `sanitize(html).toString()` |
-| **Angular** | `{{ }}` | `bypassSecurityTrustHtml()` | `sanitize(html).toString()` |
-| **Vanilla JS** | - | `element.innerHTML` | `j` tag or `sanitize().toString()` |
+| Environment       | Secure Context | **Blind Spot (XSS Risk)**   | Jaga's Solution                    |
+| ----------------- | -------------- | --------------------------- | ---------------------------------- |
+| **SSR / Node.js** | -              | String Templates            | `j` template tag ✅ Native         |
+| **React**         | JSX `{}`       | `dangerouslySetInnerHTML`   | `sanitize(html).toString()`        |
+| **Vue**           | `{{ }}`        | `v-html`                    | `sanitize(html).toString()`        |
+| **Angular**       | `{{ }}`        | `bypassSecurityTrustHtml()` | `sanitize(html).toString()`        |
+| **Vanilla JS**    | -              | `element.innerHTML`         | `j` tag or `sanitize().toString()` |
 
 > **Note:** `sanitize()` returns a `JagaHTML` object (not a raw string). This is intentional — it prevents double-escaping when used with Jaga's `j` tag. When passing to React, Vue, or Angular APIs that expect a plain string, call `.toString()` explicitly. Jaga is most powerful in **SSR and Vanilla JS** environments where it works natively without ceremony.
 
 ---
 
-## 📦 Getting Started
+## Getting Started
 
 ### Installation
 
@@ -72,18 +72,19 @@ const html = j`
 
 ---
 
-## 💎 Advanced Features
+## Advanced Features
 
 ### 1. HTML Sanitizer (SSR-Ready)
-Use this for `dangerouslySetInnerHTML` or whenever you need to permit *some* HTML (like from a rich text editor) but block the dangerous parts.
+
+Use this for `dangerouslySetInnerHTML` or whenever you need to permit _some_ HTML (like from a rich text editor) but block the dangerous parts.
 
 ```javascript
 import { sanitize } from "jagajs/sanitize";
 
 // Strip dangerous tags/attrs but keep formatting
 const clean = sanitize(userRichText, {
-  allowedTags: ['b', 'i', 'p', 'a'],
-  allowedAttrs: { 'a': ['href'] }
+  allowedTags: ["b", "i", "p", "a"],
+  allowedAttrs: { a: ["href"] },
 });
 
 // Works perfectly with Jaga core
@@ -91,10 +92,14 @@ const article = j`<div class="content">${clean}</div>`;
 ```
 
 ### 2. Secure JSON Injection
+
 Safely inject server-side state into your frontend without worrying about `</script>` breakouts.
 
 ```javascript
-const state = { user: "Admin", bio: "</script><script>alert('pwned')</script>" };
+const state = {
+  user: "Admin",
+  bio: "</script><script>alert('pwned')</script>",
+};
 
 const html = j`
   <script>
@@ -104,6 +109,7 @@ const html = j`
 ```
 
 ### 3. List Rendering
+
 Jaga handles arrays seamlessly and securely:
 
 ```javascript
@@ -112,6 +118,7 @@ const list = j`<ul>${items.map((i) => j`<li>${i}</li>`)}</ul>`;
 ```
 
 ### 4. Smart Minifier
+
 Jaga's `j` tag automatically minifies your HTML by removing unnecessary whitespace, but it's smart enough to ignore `<pre>` and `<textarea>` tags.
 
 ```javascript
@@ -124,6 +131,7 @@ const html = j`
 ```
 
 ### 5. Secure Nonce for CSP
+
 Easy injection of CSP nonces for inline scripts:
 
 ```javascript
@@ -135,13 +143,13 @@ const script = j`<script nonce="${myNonce}">console.log('Safe script');</script>
 
 ---
 
-## 🛡️ Trusted Types Compatible
+## Trusted Types Compatible
 
 Jaga's `JagaHTML` wrapper is designed to integrate cleanly with the browser's [Trusted Types API](https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API). When your CSP enforces `require-trusted-types-for 'script'`, you can wrap Jaga's output with your own policy:
 
 ```javascript
-const policy = trustedTypes.createPolicy('jaga', {
-  createHTML: (html) => html // Jaga already cleaned it
+const policy = trustedTypes.createPolicy("jaga", {
+  createHTML: (html) => html, // Jaga already cleaned it
 });
 
 element.innerHTML = policy.createHTML(sanitize(userHtml).toString());
