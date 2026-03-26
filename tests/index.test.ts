@@ -71,11 +71,39 @@ describe('Jaga Phase 1: Smart Context Awareness', () => {
   });
 
   describe('Utilities', () => {
-    it('should generate a valid nonce', () => {
-      const n = nonce();
-      expect(typeof n).toBe('string');
-      expect(n.length).toBeGreaterThan(10);
-      expect(nonce()).not.toBe(n); // Should be unique
+    it('should generate secure nonces', () => {
+      const n1 = nonce();
+      const n2 = nonce();
+      expect(n1).not.toBe(n2);
+      expect(n1.length).toBeGreaterThan(10);
+    });
+
+    it('should escape JSON for script tags using j.json', () => {
+      const data = { xss: '</script><script>alert(1)</script>' };
+      const escapedJson = j.json(data).toString();
+      expect(escapedJson).toContain('<\\/script>');
+      expect(escapedJson).not.toContain('</script>');
+    });
+
+    it('should minify whitespace between tags', () => {
+      const html = j`
+        <div>
+          <span>Hello</span>
+        </div>
+      `;
+      expect(html.toString()).toBe('<div><span>Hello</span></div>');
+    });
+
+    it('should not minify whitespace inside pre or textarea', () => {
+      const html = j`<pre>  spaced  </pre>`;
+      expect(html.toString()).toBe('<pre>  spaced  </pre>');
+    });
+
+    it('should warn for inline event handlers (Strict CSP)', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      j`<button onclick="${'alert(1)'}">Click</button>`;
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Strict CSP'));
+      consoleSpy.mockRestore();
     });
 
     it('should support unsafe for bypass', () => {

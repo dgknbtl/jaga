@@ -73,7 +73,12 @@ export function escapeHTML(str: any, context: 'text' | 'attr' | 'url' = 'text'):
  * Jaga Tagged Template Literal handler.
  * usage: j`<div>${userContent}</div>`
  */
-export function j(strings: TemplateStringsArray, ...values: any[]): JagaHTML {
+export interface JagaRenderer {
+  (strings: TemplateStringsArray, ...values: any[]): JagaHTML;
+  json(data: any): JagaHTML;
+}
+
+export const j: JagaRenderer = function(strings: TemplateStringsArray, ...values: any[]): JagaHTML {
   let result = strings[0];
 
   for (let i = 0; i < values.length; i++) {
@@ -85,9 +90,21 @@ export function j(strings: TemplateStringsArray, ...values: any[]): JagaHTML {
     if (attrMatch) {
       const attrName = attrMatch[1].toLowerCase();
       context = (attrName === 'href' || attrName === 'src') ? 'url' : 'attr';
+
+      // Strict CSP: Warn against inline event handlers (on*)
+      if (attrName.startsWith('on')) {
+        warn(`Strict CSP: Inline event handler "${attrName}" detected. Using addEventListener is strongly recommended for better security.`);
+      }
     }
 
     result += escapeHTML(values[i], context) + strings[i + 1];
+  }
+
+  // Smart Whitespace Minifier (Production only, or triggered by a rule)
+  // Simple version: remove whitespace between tags, preserving content.
+  // Note: This won't run if <pre> or <textarea> is detected to avoid breaking them.
+  if (!/<pre|<textarea/i.test(result)) {
+    result = result.replace(/>\s+</g, '><').trim();
   }
 
   // Native Trusted Types Integration
@@ -103,7 +120,7 @@ export function j(strings: TemplateStringsArray, ...values: any[]): JagaHTML {
   }
 
   return new JagaHTML(result);
-}
+} as JagaRenderer;
 
 /**
  * Explicitly marks a string as safe.
@@ -125,3 +142,15 @@ export function nonce(): string {
   }
   return btoa(String.fromCharCode(...arr));
 }
+
+/**
+ * Marks a JSON object as safe for injection into <script> tags.
+ * Escapes </script> and other sensitive characters.
+ */
+j.json = function(data: any): JagaHTML {
+  const json = JSON.stringify(data)
+    .replace(/<\/script/g, '<\\/script')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+  return new JagaHTML(json);
+};

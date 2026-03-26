@@ -15,7 +15,8 @@
 
 - **Smart Context Awareness**: Automatically identifies if data is in a `<div>`, an `href`, or an `onclick`.
 - **Built-in URL Sanitization**: Proactively blocks `javascript:` and other dangerous protocols.
-- **DX Guardrails**: Helpful console warnings during development when a security risk is neutralized.
+- **Smart Minifier**: Automatically cleans up unnecessary whitespace between HTML tags (intelligent enough to preserve `<pre>` and `<textarea>`).
+- **DX Guardrails**: Helpful console warnings during development when a security risk or non-CSP-compliant pattern is detected.
 - **Nano-sized**: Less than **1KB** gzipped. No dependencies, no bloat.
 - **Trusted Types Native**: Built-in support for the browser's native `TrustedHTML` API.
 - **CSP Ready**: Cryptographically strong `nonce()` helper included for secure inline scripts.
@@ -54,6 +55,15 @@ Jaga handles arrays seamlessly and securely:
 ```javascript
 const items = ["Safe", "<b>Bold</b>", "<i>Italic</i>"];
 const list = j`<ul>${items.map((i) => j`<li>${i}</li>`)}</ul>`;
+```
+
+### Secure JSON for `<script>`
+
+Inject JSON data safely into scripts without worrying about `</script>` breakouts:
+
+```javascript
+const data = { user: "Admin", bio: "</script><script>alert(1)</script>" };
+const script = j`<script>window.DATA = ${j.json(data)};</script>`;
 ```
 
 ### Secure Nonce for CSP
