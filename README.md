@@ -1,8 +1,8 @@
 # 🛡️ Jaga
 
-[![npm version](https://img.shields.io/npm/v/jaga.svg?style=flat-square)](https://www.npmjs.com/package/jaga)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/jaga?label=size&style=flat-square)](https://bundlephobia.com/result?p=jaga)
-[![license](https://img.shields.io/npm/l/jaga.svg?style=flat-square)](https://github.com/dgknbtl/jaga/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/jagajs.svg?style=flat-square)](https://www.npmjs.com/package/jagajs)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/jagajs?label=size&style=flat-square)](https://bundlephobia.com/result?p=jagajs)
+[![license](https://img.shields.io/npm/l/jagajs.svg?style=flat-square)](https://github.com/dgknbtl/jaga/blob/main/LICENSE)
 [![typed](https://img.shields.io/badge/types-TypeScript-blue?style=flat-square)](https://www.typescriptlang.org/)
 
 **Jaga** (named after the word for _"guard"_ or _"protect"_) is an ultra-lightweight, zero-dependency engine that brings **Context-Aware Security** to your HTML templates. It's the invisible guardian between your user's data and your application's DOM.
@@ -23,13 +23,13 @@
 ## Installation
 
 ```bash
-npm install jaga
+npm install jagajs
 ```
 
 ## Quick Start
 
 ```javascript
-import { j } from "jaga";
+import { j } from "jagajs";
 
 // 1. Text is automatically escaped
 const userInp = "<img src=x onerror=alert(1)>";
@@ -59,7 +59,7 @@ const list = j`<ul>${items.map((i) => j`<li>${i}</li>`)}</ul>`;
 ### Secure Nonce for CSP
 
 ```javascript
-import { j, nonce } from "jaga";
+import { j, nonce } from "jagajs";
 
 const myNonce = nonce();
 const script = j`<script nonce="${myNonce}">console.log('Safe script');</script>`;
