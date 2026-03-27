@@ -16,10 +16,12 @@
 - **Smart Context Awareness**: Automatically identifies if data is in a `<div>`, an `href`, or an `onclick`.
 - **Built-in URL Sanitization**: Proactively blocks `javascript:` and other dangerous protocols.
 - **HTML Sanitizer**: SSR-native allowlist sanitizer (`jagajs/sanitize`) — zero dependencies, works in Node.js, Bun, Deno.
+- **Native Trusted Types Support**: Automatically integrates with the browser's Trusted Types API for ultra-secure DOM assignment.
 - **Secure JSON Injection**: `j.json(data)` safely embeds state into `<script>` tags, preventing breakout attacks.
 - **Smart Minifier**: Automatically cleans up unnecessary whitespace between HTML tags (intelligently preserves `<pre>` and `<textarea>`).
 - **DX Guardrails**: Helpful console warnings during development when a security risk or non-CSP-compliant pattern is detected.
 - **Nano-sized**: Less than **3KB** gzipped (Core + Sanitizer). No dependencies, no bloat.
+- **Modular & Extensible**: A clean, scalable project structure designed for growth and performance.
 
 ---
 
@@ -145,19 +147,17 @@ const script = j`<script nonce="${myNonce}">console.log('Safe script');</script>
 
 ## Trusted Types Compatible
 
-Jaga's `JagaHTML` wrapper is designed to integrate cleanly with the browser's [Trusted Types API](https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API). When your CSP enforces `require-trusted-types-for 'script'`, you can wrap Jaga's output with your own policy:
+Jaga's `JagaHTML` wrapper is designed to integrate natively with the browser's [Trusted Types API](https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API). When your CSP enforces `require-trusted-types-for 'script'`, Jaga automatically creates a policy and returns a `TrustedHTML` object through the `.toTrusted()` method (or automatically when using Jaga's output where a string is expected but Trusted Types are required).
 
 ```javascript
-const policy = trustedTypes.createPolicy("jaga", {
-  // Best Practice: Always sanitize inside the policy itself!
-  createHTML: (html) => sanitize(html).toString(),
-});
+// Jaga handles the policy creation and wrapping for you:
+const html = j`<div>${userInput}</div>`;
 
-// Now you can safely pass even untrusted strings:
-element.innerHTML = policy.createHTML(untrustedHtml);
+// Assign directly to innerHTML (Compatible with Trusted Types CSP)
+element.innerHTML = html.toTrusted();
 ```
 
-> Native `TrustedTypePolicy` integration (auto-wrapping) is planned for a future release.
+> Native `TrustedTypePolicy` integration is active and managed by Jaga's centralized policy controller. Support is isomorphic; it falls back to secure strings in non-supporting environments or SSR.
 
 ---
 
