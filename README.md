@@ -74,6 +74,17 @@ const html = j`
 
 ---
 
+## 🎨 Interactive Showcase
+
+Explore Jaga's security features in action! The showcase demonstrates all the features of Jaga. To run the showcase locally:
+
+```bash
+npm install
+npm run showcase
+```
+
+---
+
 ## Advanced Features
 
 ### 1. HTML Sanitizer (SSR-Ready)

@@ -35,7 +35,7 @@
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly --outDir dist",
     "test": "vitest run",
-    "playground": "vite playground",
+    "showcase": "vite showcase",
     "lint": "tsc --noEmit"
   },
   "keywords": [
