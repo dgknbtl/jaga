@@ -8,6 +8,7 @@
 **Jaga** (named after the word for _"guard"_ or _"protect"_) is an ultra-lightweight, zero-dependency security engine that brings **Context-Aware XSS Protection** to your HTML templates. It's the invisible guardian between your user's data and your application's DOM.
 
 > "Don't audit your security. Write it."
+> Read the [Jaga Manifesto](MANIFESTO.md)
 
 ---
 
@@ -36,20 +37,21 @@ Modern frameworks (React, Vue, Angular) are great at escaping data in their temp
 | **Vue**           | `{{ }}`        | `v-html`                    | `sanitize(html).toString()`        |
 | **Angular**       | `{{ }}`        | `bypassSecurityTrustHtml()` | `sanitize(html).toString()`        |
 | **Vanilla JS**    | -              | `element.innerHTML`         | `j` tag or `sanitize().toString()` |
+| **Strict CSP**    | Trusted Types  | `TrustedHTML` Requirement   | `j` or `sanitize` (Native TT)      |
 
 > **Note:** `sanitize()` returns a `JagaHTML` object (not a raw string). This is intentional — it prevents double-escaping when used with Jaga's `j` tag. When passing to React, Vue, or Angular APIs that expect a plain string, call `.toString()` explicitly. Jaga is most powerful in **SSR and Vanilla JS** environments where it works natively without ceremony.
 
 ### Comparison Table
 
-| Feature                | **Jaga** 🛡️         | DOMPurify          | Sanitize-html      |
-| ---------------------- | ------------------- | ----------------- | ------------------ |
-| **Size (Gzipped)**     | **< 3KB**           | ~7.2KB            | ~158KB             |
-| **Dependencies**       | **0 (Zero)**        | 0                 | 60+ (Transitive)   |
-| **SSR Support**        | **Native**          | Requires `jsdom`  | Native             |
-| **Trusted Types**      | **Native Support**  | Supported         | No                 |
-| **Context-Aware Tag**  | **Yes (`j` tag)** | No                | No                 |
-| **Smart Minifier**     | **Yes**             | No                | No                 |
-| **Primary Use Case**   | Security Engine     | Pure Sanitizer    | Server Sanitizer   |
+| Feature               | **Jaga** 🛡️        | DOMPurify        | Sanitize-html    |
+| --------------------- | ------------------ | ---------------- | ---------------- |
+| **Size (Gzipped)**    | **< 3KB**          | ~7.2KB           | ~158KB           |
+| **Dependencies**      | **0 (Zero)**       | 0                | 60+ (Transitive) |
+| **SSR Support**       | **Native**         | Requires `jsdom` | Native           |
+| **Trusted Types**     | **Native Support** | Supported        | No               |
+| **Context-Aware Tag** | **Yes (`j` tag)**  | No               | No               |
+| **Smart Minifier**    | **Yes**            | No               | No               |
+| **Primary Use Case**  | Security Engine    | Pure Sanitizer   | Server Sanitizer |
 
 ---
 
@@ -181,6 +183,70 @@ element.innerHTML = html.toTrusted();
 ```
 
 > Native `TrustedTypePolicy` integration is active and managed by Jaga's centralized policy controller. Support is isomorphic; it falls back to secure strings in non-supporting environments or SSR.
+
+---
+
+## Framework Integration
+
+While Jaga works natively in Vanilla JS and SSR, it's also a perfect companion for modern frameworks' "blind spots".
+
+### React
+
+```javascript
+import { sanitize } from "jagajs/sanitize";
+
+function MyComponent({ userHTML }) {
+  const clean = sanitize(userHTML).toString();
+  return <div dangerouslySetInnerHTML={{ __html: clean }} />;
+}
+```
+
+### Vue 3
+
+```html
+<script setup>
+  import { sanitize } from "jagajs/sanitize";
+  const cleanHTML = sanitize(props.userHTML).toString();
+</script>
+
+<template>
+  <div v-html="cleanHTML"></div>
+</template>
+```
+
+### Angular
+
+```typescript
+import { DomSanitizer } from '@angular/platform-browser';
+import { sanitize } from 'jagajs/sanitize';
+
+@Component({ ... })
+export class MyComponent {
+  constructor(private ds: DomSanitizer) {}
+
+  getSafeHTML(html: string) {
+    const clean = sanitize(html).toString();
+    return this.ds.bypassSecurityTrustHtml(clean); // Trusting Jaga's output
+  }
+}
+```
+
+---
+
+## Environment & Performance
+
+### Support Matrix
+
+| Environment  | Version    | Status                                   |
+| ------------ | ---------- | ---------------------------------------- |
+| **Node.js**  | v18+       | ✅ Native (SSR)                          |
+| **Bun**      | v1.0+      | ✅ Native (SSR)                          |
+| **Deno**     | v1.3+      | ✅ Native (SSR)                          |
+| **Browsers** | All Modern | ✅ Native (Trusted Types in Chrome/Edge) |
+
+### Performance Note ⚡
+
+Jaga is built for speed. It avoids expensive DOM parsing or Virtual DOM overhead. By utilizing optimized Regular Expressions and a focused state machine, Jaga's runtime impact is near zero. Combined with our **Smart Minifier**, Jaga often helps reduce the final HTML size sent to the user.
 
 ---
 
