@@ -39,6 +39,18 @@ Modern frameworks (React, Vue, Angular) are great at escaping data in their temp
 
 > **Note:** `sanitize()` returns a `JagaHTML` object (not a raw string). This is intentional — it prevents double-escaping when used with Jaga's `j` tag. When passing to React, Vue, or Angular APIs that expect a plain string, call `.toString()` explicitly. Jaga is most powerful in **SSR and Vanilla JS** environments where it works natively without ceremony.
 
+### Comparison Table
+
+| Feature                | **Jaga** 🛡️         | DOMPurify          | Sanitize-html      |
+| ---------------------- | ------------------- | ----------------- | ------------------ |
+| **Size (Gzipped)**     | **< 3KB**           | ~7.2KB            | ~158KB             |
+| **Dependencies**       | **0 (Zero)**        | 0                 | 60+ (Transitive)   |
+| **SSR Support**        | **Native**          | Requires `jsdom`  | Native             |
+| **Trusted Types**      | **Native Support**  | Supported         | No                 |
+| **Context-Aware Tag**  | **Yes (`j` tag)** | No                | No                 |
+| **Smart Minifier**     | **Yes**             | No                | No                 |
+| **Primary Use Case**   | Security Engine     | Pure Sanitizer    | Server Sanitizer   |
+
 ---
 
 ## Getting Started
