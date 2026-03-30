@@ -4,3 +4,5 @@ export { getJagaPolicy } from './core/policy.js';
 export { j } from './tags/template.js';
 export { unsafe, nonce } from './core/utils.js';
 export type { JagaRenderer } from './tags/template.js';
+
+export const version = __VERSION__;

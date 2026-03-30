@@ -46,4 +46,4 @@ It’s about understanding where data goes—and acting accordingly.
 ### 5. Secure the Gaps
 
 Frameworks protect the obvious.  
-We protect what they leave behind.
+We protect what they leave behind—whether HTML, attributes, URLs, or CSS.

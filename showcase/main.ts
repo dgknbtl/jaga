@@ -1,8 +1,15 @@
-import { j, nonce } from '../src/index';
+import { j, nonce, version } from '../src/index';
 import { sanitize } from '../src/sanitize';
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('%c 🛡️ Jaga Security Showcase v1.3.1 ', 'background: #6366f1; color: #fff; font-size: 20px; padding: 10px; border-radius: 5px;');
+  console.log(`%c 🛡️ Jaga Security Showcase v${version} `, 'background: #6366f1; color: #fff; font-size: 20px; padding: 10px; border-radius: 5px;');
+
+  // Update DOM version placeholders
+  document.title = `🛡️ Jaga Security Showcase v${version}`;
+  const header = document.querySelector('header h1');
+  if (header) header.textContent = `Jaga Showcase v${version}`;
+  const footer = document.querySelector('footer');
+  if (footer) footer.innerHTML = `Jaga Security v${version} | "Don't audit your security. Write it."`;
 
   // 1. SSR Sanitization
   const ssrDemo = document.getElementById('ssr-demo')!;
@@ -48,15 +55,20 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   minifyDemo.innerHTML = rawHTML.toString();
 
-  // 7. CSS Protection
+  // 7. CSS Protection (Iron-Clad Lexical)
   const cssDemo = document.getElementById('css-demo')!;
-  const maliciousStyle = 'red; background: url("javascript:alert(1)")';
-  cssDemo.innerHTML = j`<div style="color: ${maliciousStyle}">
-    <span style="font-weight:600; color:var(--success);">Sanitized Style Content</span>
-    <div style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-dim); font-family:monospace; word-break:break-all;">
-      Result: ${j.css(maliciousStyle)}
+  const maliciousStyle = 'red; background: url("javascript:alert(1)"); margin-inline-start: 2rem; color: \\6a avascript;';
+  
+  cssDemo.innerHTML = j`
+    <div style="font-weight:600; color:var(--success); margin-bottom: 0.5rem;">Lexical Engine v1.4.0:</div>
+    <div class="demo-box" style="${maliciousStyle}">
+      <span>Sanitized Content with Logical Props & Hex-Decoding</span>
     </div>
-  </div>`.toString();
+    <div style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-dim); font-family:monospace; word-break:break-all; background: var(--card-bg); padding: 8px; border-radius: 4px; border: 1px solid var(--border);">
+      Raw: ${maliciousStyle}<br>
+      <span style="color:var(--primary); margin-top:4px; display:block;">Result: ${j.css(maliciousStyle)}</span>
+    </div>
+  `.toString();
 
   // 8. Secure Nonce
   const nonceDemo = document.getElementById('nonce-demo')!;
@@ -67,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-dim);">Use this in your CSP Header and script tags.</div>
   `.toString();
 
-  console.log('--- Jaga Showcase v1.3.1 Analysis ---');
+  console.log(`--- Jaga Showcase v${version} Analysis ---`);
   console.log('Session Nonce:', sessionNonce);
   console.log('Trusted Output Sample:', j`<b>Test</b>`.toTrusted());
   console.log('------------------------------------');

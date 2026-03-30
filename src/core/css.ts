@@ -1,5 +1,5 @@
 /**
- * Jaga Lexical CSS Sanitizer (v1.4.0)
+ * Jaga Lexical CSS Sanitizer
  * "Iron-Clad" Minimalist Implementation for inline style attributes.
  * Focus: Maximum Security, Minimum Footprint (<3KB target).
  */
