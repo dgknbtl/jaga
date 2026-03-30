@@ -14,7 +14,8 @@
 
 ## Features
 
-- **Smart Context Awareness**: Automatically identifies if data is in a `<div>`, an `href`, or an `onclick`.
+- **Smart Context Awareness**: Automatically identifies if data is in a `<div>`, an `href`, an `onclick`, or a `style` attribute.
+- **CSS Context Protection**: Prevents CSS Injection in `style` attributes via non-alphanumeric hex-escaping.
 - **Built-in URL Sanitization**: Proactively blocks `javascript:` and other dangerous protocols.
 - **HTML Sanitizer**: SSR-native allowlist sanitizer (`jagajs/sanitize`) — zero dependencies, works in Node.js, Bun, Deno.
 - **Native Trusted Types Support**: Automatically integrates with the browser's Trusted Types API for ultra-secure DOM assignment.
@@ -22,7 +23,6 @@
 - **Smart Minifier**: Automatically cleans up unnecessary whitespace between HTML tags (intelligently preserves `<pre>` and `<textarea>`).
 - **DX Guardrails**: Helpful console warnings during development when a security risk or non-CSP-compliant pattern is detected.
 - **Nano-sized**: Less than **3KB** gzipped (Core + Sanitizer). No dependencies, no bloat.
-- **Modular & Extensible**: A clean, scalable project structure designed for growth and performance.
 
 ---
 
@@ -166,6 +166,17 @@ import { j, nonce } from "jagajs";
 
 const myNonce = nonce();
 const script = j`<script nonce="${myNonce}">console.log('Safe script');</script>`;
+```
+
+### 6. CSS Context Protection
+
+Jaga automatically detects `style` attributes and applies hex-escaping to all non-alphanumeric characters, preventing CSS Injection while maintaining valid styles.
+
+```javascript
+const maliciousStyle = 'red; background: url("javascript:alert(1)")';
+const html = j`<div style="color: ${maliciousStyle}">Safe Content</div>`;
+
+// Result: <div style="color: red\3b \20 background\3a \20 ...">
 ```
 
 ---
