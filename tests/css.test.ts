@@ -1,36 +1,80 @@
-import { describe, it, expect } from 'vitest';
-import { j } from '../src/tags/template';
+import { describe, expect, it } from "vitest";
+import { sanitizeCSS } from "../src/core/css";
+import { j } from "../src/tags/template";
 
-describe('Jaga CSS Protection', () => {
-  it('should escape non-alphanumeric characters in style attributes', () => {
-    const color = 'red; background: url(javascript:alert(1))';
-    const output = j`<div style="color: ${color}"></div>`;
-    
-    // Check that special characters are hex-escaped
-    expect(output.toString()).toContain('\\3b '); // semicolon
-    expect(output.toString()).toContain('\\28 '); // opening parenthesis
-    expect(output.toString()).not.toContain('javascript:');
+describe("Jaga Lexical CSS Sanitizer (v1.4.0)", () => {
+  describe("Core Logic", () => {
+    it("should allow explicitly safe longhand and logical properties", () => {
+      const input = "color: red; margin-inline-start: 10px; padding-block-end: 2rem;";
+      const result = sanitizeCSS(input);
+      expect(result).toContain("color:red;");
+      expect(result).toContain("margin-inline-start:10px;");
+      expect(result).toContain("padding-block-end:2rem;");
+    });
+
+    it("should block shorthand properties (Allowlist-driven)", () => {
+      const input = "background: red; border: 1px solid black; color: blue;";
+      const result = sanitizeCSS(input);
+      expect(result).not.toContain("background:");
+      expect(result).not.toContain("border:");
+      expect(result).toContain("color:blue;");
+    });
+
+    it("should decode hex escapes cleanly", () => {
+      const input = "color: \\6a avascript";
+      const result = sanitizeCSS(input);
+      expect(result).toContain("color:javascript;");
+    });
+
+    it("should block unauthorized functions", () => {
+      const input = "color: red; margin-top: calc(10px + 20px); width: expression(alert(1));";
+      const result = sanitizeCSS(input);
+      expect(result).not.toContain("calc");
+      expect(result).not.toContain("expression");
+      expect(result).toContain("color:red;");
+    });
+
+    it("should allow safe color functions", () => {
+      const input = "background-color: rgb(255, 0, 0); color: hsl(120, 100%, 50%);";
+      const result = sanitizeCSS(input);
+      expect(result).toContain("background-color:rgb(255,0,0);");
+      expect(result).toContain("color:hsl(120,100%,50%);");
+    });
+
+    it("should block escape breakout attempts (Boundary Enforcement)", () => {
+      const input = "color: \\3a ; margin-top: 10px";
+      const result = sanitizeCSS(input);
+      expect(result).not.toContain("color:"); 
+      expect(result).toContain("margin-top:10px;");
+    });
+
+    it("should fully conform to CSS Escape Sequence Spec", () => {
+      expect(sanitizeCSS("font-family: \\00006a avascript;")).toContain("font-family:javascript;");
+      expect(sanitizeCSS('content: "\\!";')).toContain('content:"!";');
+    });
   });
 
-  it('should prevent CSS breakout using quotes', () => {
-    const value = '"; background: red; "';
-    const output = j`<div style="font-family: ${value}"></div>`;
-    
-    expect(output.toString()).toContain('\\22 '); // quote escaped
-    expect(output.toString()).not.toContain('";');
-  });
+  describe("Template Tag Integration", () => {
+    it("should block dangerous CSS injections in style attributes via j tag", () => {
+      const color = 'color: red; background-image: url(javascript:alert(1))';
+      const output = j`<div style="${color}"></div>`;
+      expect(output.toString()).toContain('color:red;');
+      expect(output.toString()).not.toContain('javascript:');
+      expect(output.toString()).not.toContain('background-image:');
+    });
 
-  it('should work with j.css() helper', () => {
-    const cssValue = '100%; border: 1px solid red;';
-    const safe = j.css(cssValue);
-    
-    expect(safe.toString()).toContain('\\25 ');
-    expect(safe.toString()).toContain('\\3b ');
-  });
+    it("should prevent CSS breakout using quotes", () => {
+      const value = '"; color: red; "';
+      const output = j`<div style="font-family: ${value}"></div>`;
+      expect(output.toString()).not.toContain('color:red;');
+      expect(output.toString()).toBe('<div style="font-family: "></div>');
+    });
 
-  it('should preserve alphanumeric characters', () => {
-    const font = 'Arial123';
-    const output = j`<div style="font-family: ${font}"></div>`;
-    expect(output.toString()).toContain('Arial123');
+    it("should work with j.css() helper", () => {
+      const cssValue = 'color: red; padding-top: 10px;';
+      const safe = j.css(cssValue);
+      expect(safe.toString()).toContain('color:red;');
+      expect(safe.toString()).toContain('padding-top:10px;');
+    });
   });
 });

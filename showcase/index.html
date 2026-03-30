@@ -1,100 +1,148 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🛡️ Jaga Security Showcase v1.3.1</title>
-  <link rel="stylesheet" href="./style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Jaga Showcase v1.3.1</h1>
-      <p class="subtitle">Full-Featured Security & DX Demonstrations</p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🛡️ Jaga Security Showcase v1.3.1</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Jaga Showcase v1.3.1</h1>
+        <p class="subtitle">Full-Featured Security & DX Demonstrations</p>
+      </header>
 
-    <div class="grid">
-      <!-- SSR Scenario -->
-      <div class="card">
-        <h2><span class="badge">SSR</span> Content Sanitization</h2>
-        <p>Simulation of server-side sanitization for rich text content. Strips dangerous tags while preserving safety.</p>
-        <div class="code-view">sanitize(maliciousHTML)</div>
-        <div id="ssr-demo" class="demo-box"></div>
-        <div class="status-label status-secure"><span class="status-icon"></span> Logic: Isomorphic / SSR-Native</div>
+      <div class="grid">
+        <!-- SSR Scenario -->
+        <div class="card">
+          <h2><span class="badge">SSR</span> Content Sanitization</h2>
+          <p>
+            Simulation of server-side sanitization for rich text content. Strips
+            dangerous tags while preserving safety.
+          </p>
+          <div class="code-view">sanitize(maliciousHTML)</div>
+          <div id="ssr-demo" class="demo-box"></div>
+          <div class="status-label status-secure">
+            <span class="status-icon"></span> Logic: Isomorphic / SSR-Native
+          </div>
+        </div>
+
+        <!-- Client Side / Trusted Types -->
+        <div class="card">
+          <h2><span class="badge">Client</span> Trusted Types</h2>
+          <p>
+            Assignment to innerHTML using native Trusted Types policy. Prevents
+            "sink" vulnerabilities.
+          </p>
+          <div class="code-view">element.innerHTML = j`...`.toTrusted()</div>
+          <div id="client-demo" class="demo-box"></div>
+          <div class="status-label status-secure">
+            <span class="status-icon"></span> Logic: Native Trusted Types API
+          </div>
+        </div>
+
+        <!-- JSON Injection -->
+        <div class="card">
+          <h2><span class="badge">Security</span> Secure JSON Injection</h2>
+          <p>
+            Safely embedding complex state into script tags without
+            breakout/termination risks.
+          </p>
+          <div class="code-view">j.json(complexState)</div>
+          <div id="json-demo" class="demo-box"></div>
+          <div class="status-label status-secure">
+            <span class="status-icon"></span> Logic: script-breakout Prevention
+          </div>
+        </div>
+
+        <!-- List Rendering -->
+        <div class="card">
+          <h2><span class="badge">Feature</span> List Rendering</h2>
+          <p>
+            Handling arrays and nested templates securely. Nested logic is
+            automatically sanitized.
+          </p>
+          <div class="code-view">
+            items.map(i => j`&lt;li&gt;${i}&lt;/li&gt;`)
+          </div>
+          <ul id="list-demo" class="demo-box"></ul>
+          <div class="status-label status-secure">
+            <span class="status-icon"></span> Logic: Recursive Context Analysis
+          </div>
+        </div>
+
+        <!-- URL Protocol Guard -->
+        <div class="card">
+          <h2><span class="badge">Security</span> URL Protocol Guard</h2>
+          <p>
+            Automatic detection and blocking of <code>javascript:</code> schemas
+            in <code>href</code> attributes.
+          </p>
+          <div class="code-view">&lt;a href="${'javascript:...'}"&gt;</div>
+          <div id="url-demo" class="demo-box"></div>
+          <div class="status-label status-blocked">
+            <span class="status-icon"></span> Logic: Protocol Schema Blocking
+          </div>
+        </div>
+
+        <!-- Smart Minifier -->
+        <div class="card">
+          <h2><span class="badge">DX</span> Smart Minifier</h2>
+          <p>
+            Intelligent whitespace removal that respects formatting-sensitive
+            tags like <code>&lt;pre&gt;</code>.
+          </p>
+          <div class="code-view">
+            j`&lt;div&gt; &lt;pre&gt; ...&lt;/pre&gt; &lt;/div&gt;`
+          </div>
+          <div id="minify-demo" class="demo-box"></div>
+          <div class="status-label status-secure">
+            <span class="status-icon"></span> Logic: Semantic Minification
+          </div>
+        </div>
+
+        <!-- Secure Nonce -->
+        <div class="card">
+          <h2><span class="badge">Security</span> CSP Nonce Helper</h2>
+          <p>
+            Cryptographically secure nonce generation for strict Content
+            Security Policies.
+          </p>
+          <div class="code-view">import { nonce } from 'jagajs'</div>
+          <div id="nonce-demo" class="demo-box"></div>
+          <div class="status-label status-secure">
+            <span class="status-icon"></span> Logic: Crypto-Secure Entropy
+          </div>
+        </div>
+
+        <!-- CSS Protection -->
+        <div class="card">
+          <h2><span class="badge">SEC</span> CSS Iron-Clad Protection</h2>
+          <p>
+            Advanced Lexical CSS Sanitizer (v1.4.0). AST-based parsing, protocol
+            filtering, and boundary enforcement.
+          </p>
+          <div class="code-view">j&lt;div style="${'color: red; ...'}"&gt;</div>
+          <div id="css-demo" class="demo-box"></div>
+          <div class="status-label status-secure">
+            <span class="status-icon"></span> Logic: Recursive AST Property
+            Validation
+          </div>
+        </div>
       </div>
 
-      <!-- Client Side / Trusted Types -->
-      <div class="card">
-        <h2><span class="badge">Client</span> Trusted Types</h2>
-        <p>Assignment to innerHTML using native Trusted Types policy. Prevents "sink" vulnerabilities.</p>
-        <div class="code-view">element.innerHTML = j`...`.toTrusted()</div>
-        <div id="client-demo" class="demo-box"></div>
-        <div class="status-label status-secure"><span class="status-icon"></span> Logic: Native Trusted Types API</div>
-      </div>
-
-      <!-- JSON Injection -->
-      <div class="card">
-        <h2><span class="badge">Security</span> Secure JSON Injection</h2>
-        <p>Safely embedding complex state into script tags without breakout/termination risks.</p>
-        <div class="code-view">j.json(complexState)</div>
-        <div id="json-demo" class="demo-box"></div>
-        <div class="status-label status-secure"><span class="status-icon"></span> Logic: script-breakout Prevention</div>
-      </div>
-
-      <!-- List Rendering -->
-      <div class="card">
-        <h2><span class="badge">Feature</span> List Rendering</h2>
-        <p>Handling arrays and nested templates securely. Nested logic is automatically sanitized.</p>
-        <div class="code-view">items.map(i => j`&lt;li&gt;${i}&lt;/li&gt;`)</div>
-        <ul id="list-demo" class="demo-box"></ul>
-        <div class="status-label status-secure"><span class="status-icon"></span> Logic: Recursive Context Analysis</div>
-      </div>
-
-      <!-- URL Protocol Guard -->
-      <div class="card">
-        <h2><span class="badge">Security</span> URL Protocol Guard</h2>
-        <p>Automatic detection and blocking of <code>javascript:</code> schemas in <code>href</code> attributes.</p>
-        <div class="code-view">&lt;a href="${'javascript:...'}"&gt;</div>
-        <div id="url-demo" class="demo-box"></div>
-        <div class="status-label status-blocked"><span class="status-icon"></span> Logic: Protocol Schema Blocking</div>
-      </div>
-
-      <!-- Smart Minifier -->
-      <div class="card">
-        <h2><span class="badge">DX</span> Smart Minifier</h2>
-        <p>Intelligent whitespace removal that respects formatting-sensitive tags like <code>&lt;pre&gt;</code>.</p>
-        <div class="code-view">j`&lt;div&gt;   &lt;pre&gt;   ...&lt;/pre&gt;   &lt;/div&gt;`</div>
-        <div id="minify-demo" class="demo-box"></div>
-        <div class="status-label status-secure"><span class="status-icon"></span> Logic: Semantic Minification</div>
-      </div>
-
-      <!-- Secure Nonce -->
-      <div class="card">
-        <h2><span class="badge">Security</span> CSP Nonce Helper</h2>
-        <p>Cryptographically secure nonce generation for strict Content Security Policies.</p>
-        <div class="code-view">import { nonce } from 'jagajs'</div>
-        <div id="nonce-demo" class="demo-box"></div>
-        <div class="status-label status-secure"><span class="status-icon"></span> Logic: Crypto-Secure Entropy</div>
-      </div>
-
-      <!-- CSS Protection -->
-      <div class="card">
-        <h2><span class="badge">P0-2</span> CSS Context Protection</h2>
-        <p>Prevents CSS Injection in <code>style</code> attributes via Hex-Escaping.</p>
-        <div class="code-view">j&lt;div style="color: ${'red; ...'}"&gt;</div>
-        <div id="css-demo" class="demo-box"></div>
-        <div class="status-label status-secure"><span class="status-icon"></span> Logic: Non-Alphanumeric Hex Escape</div>
-      </div>
+      <footer>
+        Jaga Security v1.4.0 | "Don't audit your security. Write it."
+      </footer>
     </div>
 
-    <footer>
-      Jaga Security v1.3.1 | "Don't audit your security. Write it."
-    </footer>
-  </div>
-
-  <script type="module" src="./main.ts"></script>
-</body>
+    <script type="module" src="./main.ts"></script>
+  </body>
 </html>

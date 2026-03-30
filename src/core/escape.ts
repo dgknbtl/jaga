@@ -1,3 +1,4 @@
+import { sanitizeCSS, sanitizeCSSValue } from './css.js';
 import { JagaHTML } from './types.js';
 
 // @ts-ignore
@@ -32,11 +33,7 @@ export function escapeHTML(str: any, context: 'text' | 'attr' | 'url' | 'css' = 
   }
 
   if (context === 'css') {
-    // CSS Escaping: Escape non-alphanumeric characters as \HH 
-    return text.replace(/[^a-z0-9]/gi, (c) => {
-      const hex = c.charCodeAt(0).toString(16);
-      return `\\${hex.padStart(2, '0')} `;
-    });
+    return text.includes(':') ? sanitizeCSS(text) : sanitizeCSSValue(text);
   }
 
   let hasReplaced = false;

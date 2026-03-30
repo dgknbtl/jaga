@@ -1,6 +1,6 @@
 {
   "name": "jagajs",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "The ultimate ultra-lightweight, context-aware security engine for HTML templates. Zero-dependency XSS protection for modern web apps.",
   "repository": {
     "type": "git",
