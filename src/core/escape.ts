@@ -17,7 +17,7 @@ export function warn(msg: string) {
  * Automatically identifies HTML context (text, attribute, or URL)
  * and applies the strictest security filters required.
  */
-export function escapeHTML(str: any, context: 'text' | 'attr' | 'url' = 'text'): string {
+export function escapeHTML(str: any, context: 'text' | 'attr' | 'url' | 'css' = 'text'): string {
   if (str instanceof JagaHTML) return str.toString();
   if (Array.isArray(str)) return str.map(s => escapeHTML(s, context)).join('');
   
@@ -29,6 +29,14 @@ export function escapeHTML(str: any, context: 'text' | 'attr' | 'url' = 'text'):
       warn(`Dangerous protocol blocked in URL context: "${text.trim()}"`);
       return 'about:blank';
     }
+  }
+
+  if (context === 'css') {
+    // CSS Escaping: Escape non-alphanumeric characters as \HH 
+    return text.replace(/[^a-z0-9]/gi, (c) => {
+      const hex = c.charCodeAt(0).toString(16);
+      return `\\${hex.padStart(2, '0')} `;
+    });
   }
 
   let hasReplaced = false;

@@ -48,7 +48,17 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   minifyDemo.innerHTML = rawHTML.toString();
 
-  // 7. Secure Nonce
+  // 7. CSS Protection
+  const cssDemo = document.getElementById('css-demo')!;
+  const maliciousStyle = 'red; background: url("javascript:alert(1)")';
+  cssDemo.innerHTML = j`<div style="color: ${maliciousStyle}">
+    <span style="font-weight:600; color:var(--success);">Sanitized Style Content</span>
+    <div style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-dim); font-family:monospace; word-break:break-all;">
+      Result: ${j.css(maliciousStyle)}
+    </div>
+  </div>`.toString();
+
+  // 8. Secure Nonce
   const nonceDemo = document.getElementById('nonce-demo')!;
   const sessionNonce = nonce();
   nonceDemo.innerHTML = j`

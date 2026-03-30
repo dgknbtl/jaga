@@ -10,6 +10,7 @@ import { secureJSON } from '../core/utils.js';
 export interface JagaRenderer {
   (strings: TemplateStringsArray, ...values: any[]): JagaHTML;
   json(data: any): JagaHTML;
+  css(data: any): JagaHTML;
 }
 
 export const j: JagaRenderer = function(strings: TemplateStringsArray, ...values: any[]): JagaHTML {
@@ -17,13 +18,17 @@ export const j: JagaRenderer = function(strings: TemplateStringsArray, ...values
 
   for (let i = 0; i < values.length; i++) {
     const prev = strings[i];
-    let context: 'text' | 'attr' | 'url' = 'text';
+    let context: 'text' | 'attr' | 'url' | 'css' = 'text';
 
     // Context Detection Algorithm
     const attrMatch = prev.match(/([a-zA-Z-]+)\s*=\s*['"]?[^>]*$/);
     if (attrMatch) {
       const attrName = attrMatch[1].toLowerCase();
-      context = (attrName === 'href' || attrName === 'src') ? 'url' : 'attr';
+      if (attrName === 'style') {
+        context = 'css';
+      } else {
+        context = (attrName === 'href' || attrName === 'src') ? 'url' : 'attr';
+      }
 
       // Strict CSP: Warn against inline event handlers (on*)
       if (attrName.startsWith('on')) {
@@ -56,3 +61,4 @@ export const j: JagaRenderer = function(strings: TemplateStringsArray, ...values
 
 // Attach helpers
 j.json = secureJSON;
+j.css = (data: any) => new JagaHTML(escapeHTML(data, 'css'));

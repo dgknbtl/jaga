@@ -79,6 +79,15 @@
         <div id="nonce-demo" class="demo-box"></div>
         <div class="status-label status-secure"><span class="status-icon"></span> Logic: Crypto-Secure Entropy</div>
       </div>
+
+      <!-- CSS Protection -->
+      <div class="card">
+        <h2><span class="badge">P0-2</span> CSS Context Protection</h2>
+        <p>Prevents CSS Injection in <code>style</code> attributes via Hex-Escaping.</p>
+        <div class="code-view">j&lt;div style="color: ${'red; ...'}"&gt;</div>
+        <div id="css-demo" class="demo-box"></div>
+        <div class="status-label status-secure"><span class="status-icon"></span> Logic: Non-Alphanumeric Hex Escape</div>
+      </div>
     </div>
 
     <footer>
