@@ -70,23 +70,26 @@ git push --follow-tags
 ```
 
 ### Step 8: Create GitHub Release
-Prepare the release notes using the Jaga standard format:
+Run the automation script to create the release:
+```bash
+./scripts/create-github-releases.sh
+```
+
+This creates the release with:
+- **Title**: `🛡️ Jaga vX.X.X`
+- **Body**: `### Changelog` section with raw changeset entries (commit links and summaries).
+
+**Agent Step:** If this release contains significant architectural or security changes, the agent will additionally prepend the following sections **before** `### Changelog` using `gh release edit`:
 
 ```markdown
-## 🛡️ Jaga vX.Y.Z
-> **[Release Theme]**
-
-**Release Type:** [Major / Minor / Patch]
-
 ### Core Breakthroughs
-* [Architectural innovations]
+* **Feature Name:** Description of the architectural change.
 
 ### Security Posture
-* [Security enhancements/fixes]
-
-### Changelog & Maintenance
-* **[NEW]** / **[UPDATE]** / **[FIX]**
+* **Fix/Enhancement:** Description of the security improvement.
 ```
+
+These sections are **only added when applicable**. A documentation-only release will have just `### Changelog`.
 
 ---
 
@@ -100,6 +103,7 @@ GITHUB_TOKEN=$(gh auth token) npx changeset version  # bump
 npm run build                                        # verify integrity
 npx changeset publish                                # publish + tag
 git push --follow-tags                               # push tag
+./scripts/create-github-releases.sh                  # create GitHub release
 ```
 
 ## Rules
