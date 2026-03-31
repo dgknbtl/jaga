@@ -5,14 +5,13 @@ set -euo pipefail
 # Title:  🛡️ Jaga vX.X.X
 # Notes:  Release type + raw changeset entries under "### Changelog"
 
-TAG=$(git tag --points-at HEAD | head -n 1)
+VERSION=$(node -p "require('./package.json').version")
+TAG="v$VERSION"
 
-if [ -z "$TAG" ]; then
-  echo "No tag found at HEAD. Did you run 'npx changeset publish'?"
+if [ -z "$VERSION" ]; then
+  echo "Could not determine version from package.json."
   exit 1
 fi
-
-VERSION="${TAG#v}"
 
 # Detect release type from semver
 PREV_TAG=$(git tag --sort=-version:refname | grep -v "^$TAG$" | head -n 1)
