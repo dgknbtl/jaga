@@ -5,6 +5,4 @@ dist/
 .vscode/
 .idea/
 coverage/
-.agent/
-.agents/
 brain/

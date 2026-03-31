@@ -56,10 +56,11 @@
   "author": "Dogukan Batal <dogukanbatal@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@changesets/changelog-github": "^0.6.0",
     "@types/node": "^22.13.9",
+    "happy-dom": "^17.1.8",
     "typescript": "^5.8.2",
     "vite": "^6.2.0",
-    "vitest": "^3.0.7",
-    "happy-dom": "^17.1.8"
+    "vitest": "^3.0.7"
   }
 }
