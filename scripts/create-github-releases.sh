@@ -50,8 +50,10 @@ if [ -z "$PATCH_NOTES" ]; then
     | grep -v "^### Major Changes")
 fi
 
+RELEASE_TYPE_LABEL=$(echo "$RELEASE_TYPE" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')
+
 RELEASE_TITLE="🛡️ Jaga $TAG"
-RELEASE_BODY="**Release Type:** ${RELEASE_TYPE^}
+RELEASE_BODY="**Release Type:** $RELEASE_TYPE_LABEL
 
 ### Changelog
 $PATCH_NOTES"
