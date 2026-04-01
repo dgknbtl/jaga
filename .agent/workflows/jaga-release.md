@@ -36,7 +36,12 @@ Write code, commit, push — normal development.
 ```bash
 npx changeset
 ```
-Select `patch`/`minor`/`major` and write a summary. This is auto-committed.
+Select `patch`/`minor`/`major` and write a summary. Then commit it together with your code changes:
+```bash
+git add .changeset/<generated-file>.md
+git commit --amend --no-edit
+```
+Or include it in a separate chore commit if the code was already pushed.
 
 ### Step 3: Push to GitHub
 ```bash
@@ -48,10 +53,12 @@ git push
 ```bash
 export GITHUB_TOKEN=$(gh auth token)
 npx changeset version
+git add package.json CHANGELOG.md
+git commit -m "chore: bump version to $(node -p "require('./package.json').version")"
 ```
 - Updates `package.json` and `CHANGELOG.md`.
 - Uses GitHub API to link PRs/authors.
-- Auto-committed.
+- Must be committed manually (`commit: false`).
 
 ### Step 5: Build Jaga (Audit Integrity)
 ```bash
@@ -129,12 +136,14 @@ gh release edit <tag> --notes "<enriched body>"
 
 ```bash
 # After code is committed:
-npx changeset                                        # declare
-git push                                             # push intent
+npx changeset                                        # declare intent
+git add .changeset/<generated>.md && git commit --amend --no-edit  # fold into last commit
+git push                                             # push (required before version)
 export GITHUB_TOKEN=$(gh auth token)                 # export token
-npx changeset version                                # bump
+npx changeset version                                # bump package.json + CHANGELOG
+git add package.json CHANGELOG.md && git commit -m "chore: bump version to $(node -p "require('./package.json').version")"
 npm run build                                        # verify integrity
-npx changeset publish                                # publish + tag
+npx changeset publish                                # publish to npm + create tag
 git push --follow-tags                               # push tag
 ./scripts/create-github-releases.sh                  # create GitHub release
 # → then tell the agent: "analyze and enrich the release notes"
