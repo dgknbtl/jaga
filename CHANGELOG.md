@@ -1,5 +1,14 @@
 # jagajs
 
+## 1.5.0
+
+### Minor Changes
+
+- [`9f2cb30`](https://github.com/dgknbtl/jaga/commit/9f2cb3035140540bf678735e9890cec13aab9daf) Thanks [@dgknbtl](https://github.com/dgknbtl)! - feat: add data-\* attribute support to sanitizer and fix multi-part attribute context detection
+
+  - `sanitize()` now passes `data-*` attributes by default (`allowDataAttrs: true`), enabling Alpine.js, HTMX, and other data-attribute-driven frameworks out of the box. Set `allowDataAttrs: false` to opt out.
+  - Replaced the single-regex context detector in `j` tag with `resolveContext()`, which builds a static prefix using `\x00` placeholders for prior substitutions. Fixes multi-part attributes (`href="${base}${path}"`), closed-tag text context, closing-tag bypass, and sequential attributes.
+
 ## 1.4.3
 
 ### Patch Changes
