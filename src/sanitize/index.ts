@@ -6,6 +6,8 @@ import { getJagaPolicy } from '../core/policy.js';
 export interface SanitizeOptions {
   allowedTags?: string[];
   allowedAttrs?: Record<string, string[]>;
+  /** Allow data-* attributes on all elements. Default: true. */
+  allowDataAttrs?: boolean;
 }
 
 type ParserState =
@@ -74,10 +76,13 @@ function escapeText(text: string): string {
     .replace(/>/g, '&gt;');
 }
 
+const DATA_ATTR = /^data-[a-z][a-z0-9-]*$/;
+
 function buildAttrs(
   tagName: string,
   rawAttrs: Record<string, string>,
-  mergedAttrs: Record<string, string[]>
+  mergedAttrs: Record<string, string[]>,
+  allowDataAttrs: boolean
 ): string {
   const global = mergedAttrs['*'] ?? [];
   const specific = mergedAttrs[tagName] ?? [];
@@ -85,7 +90,8 @@ function buildAttrs(
 
   let out = '';
   for (const [name, value] of Object.entries(rawAttrs)) {
-    if (!allowed.has(name)) continue;
+    const isAllowed = allowed.has(name) || (allowDataAttrs && DATA_ATTR.test(name));
+    if (!isAllowed) continue;
     const safe = URL_ATTRS.has(name) ? safeUrl(value) : value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
     out += ` ${name}="${safe}"`;
   }
@@ -97,7 +103,8 @@ function buildAttrs(
 function parse(
   html: string,
   allowedTags: Set<string>,
-  mergedAttrs: Record<string, string[]>
+  mergedAttrs: Record<string, string[]>,
+  allowDataAttrs: boolean
 ): string {
   const parts: string[] = [];
   let state: ParserState = 'TEXT';
@@ -121,7 +128,7 @@ function parse(
       return;
     }
     if (!allowedTags.has(name)) return;
-    const attrStr = buildAttrs(name, attrs, mergedAttrs);
+    const attrStr = buildAttrs(name, attrs, mergedAttrs, allowDataAttrs);
     parts.push(`<${name}${attrStr}>`);
   };
 
@@ -246,7 +253,7 @@ export function sanitize(html: string, options: SanitizeOptions = {}): JagaHTML 
     }
   }
 
-  const result = parse(html, allowedTags, mergedAttrs);
+  const result = parse(html, allowedTags, mergedAttrs, options.allowDataAttrs !== false);
 
   // Trusted Types Integration
   const policy = getJagaPolicy();

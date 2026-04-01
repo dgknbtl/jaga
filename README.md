@@ -13,10 +13,10 @@ Read the [Jaga Manifesto](MANIFESTO.md)
 
 ## Features
 
-- **Smart Context Awareness**: Automatically identifies if data is in a `<div>`, an `href`, an `onclick`, or a `style` attribute.
-- **HTML Sanitizer**: SSR-native allowlist sanitizer (`jagajs/sanitize`) — zero dependencies, works in Node.js, Bun, Deno.
+- **Smart Context Awareness**: Automatically identifies injection context across multi-part attributes, sequential attributes, and closed tags — applies the correct escaping rules for `text`, `attr`, `url`, and `css` contexts.
+- **HTML Sanitizer**: SSR-native allowlist sanitizer (`jagajs/sanitize`) — zero dependencies, works in Node.js, Bun, Deno. Includes `data-*` attribute support out of the box.
 - **CSS Context Protection**: Prevents CSS Injection in `style` attributes via lexical analysis and strict escaping.
-- **Built-in URL Sanitization**: Proactively blocks `javascript:` and other dangerous protocols.
+- **Built-in URL Sanitization**: Proactively blocks `javascript:` and other dangerous protocols, including encoded bypass attempts.
 - **Native Trusted Types Support**: Automatically integrates with the browser's Trusted Types API for ultra-secure DOM assignment.
 - **Secure JSON Injection**: `j.json(data)` safely embeds state into `<script>` tags, preventing breakout attacks.
 - **Smart Minifier**: Automatically cleans up unnecessary whitespace between HTML tags (intelligently preserves `<pre>` and `<textarea>`).
@@ -121,6 +121,17 @@ const clean = sanitize(userRichText, {
 
 // Works perfectly with Jaga core
 const article = j`<div class="content">${clean}</div>`;
+```
+
+`data-*` attributes are allowed by default, enabling seamless use with Alpine.js, HTMX, and other data-attribute-driven frameworks:
+
+```javascript
+// data-* attributes pass through automatically
+const clean = sanitize('<div data-user-id="42" data-role="editor">text</div>').toString();
+// → <div data-user-id="42" data-role="editor">text</div>
+
+// Opt out if you don't need them
+const strict = sanitize(html, { allowDataAttrs: false }).toString();
 ```
 
 ### 2. Secure JSON Injection
@@ -299,7 +310,7 @@ document.body.innerHTML = j`<div>${userInput}</div>`.toTrusted();
 
 | Environment  | Version    | Status                                   |
 | ------------ | ---------- | ---------------------------------------- |
-| **Node.js**  | v18+       | ✅ Native (SSR)                          |
+| **Node.js**  | v15+       | ✅ Native (SSR)                          |
 | **Bun**      | v1.0+      | ✅ Native (SSR)                          |
 | **Deno**     | v1.3+      | ✅ Native (SSR)                          |
 | **Browsers** | All Modern | ✅ Native (Trusted Types in Chrome/Edge) |

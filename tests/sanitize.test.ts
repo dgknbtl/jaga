@@ -111,4 +111,46 @@ describe('Jaga Sanitizer — jagajs/sanitize', () => {
       expect(result.toString()).toBe('<b>safe</b>');
     });
   });
+
+  describe('data-* Attribute Support', () => {
+    it('should allow data-* attributes by default', () => {
+      const result = sanitize('<div data-id="123" data-user-name="alice">text</div>').toString();
+      expect(result).toContain('data-id="123"');
+      expect(result).toContain('data-user-name="alice"');
+    });
+
+    it('should escape special chars in data-* values', () => {
+      const result = sanitize('<div data-value=\'a"b\'>text</div>').toString();
+      expect(result).toContain('data-value="a&quot;b"');
+    });
+
+    it('should reject malformed data-* names (uppercase)', () => {
+      const result = sanitize('<div data-FOO="x">text</div>').toString();
+      expect(result).not.toContain('data-FOO');
+    });
+
+    it('should reject bare data- with no suffix', () => {
+      const result = sanitize('<div data-="x">text</div>').toString();
+      expect(result).not.toContain('data-=');
+    });
+
+    it('should reject data-* names starting with a digit', () => {
+      const result = sanitize('<div data-1foo="x">text</div>').toString();
+      expect(result).not.toContain('data-1foo');
+    });
+
+    it('should strip data-* when allowDataAttrs is false', () => {
+      const result = sanitize('<div data-id="123">text</div>', {
+        allowDataAttrs: false,
+      }).toString();
+      expect(result).not.toContain('data-id');
+      expect(result).toBe('<div>text</div>');
+    });
+
+    it('should not URL-sanitize data-* values', () => {
+      // data-* has no href/src semantics — value is plain attr-escaped, not blocked
+      const result = sanitize('<div data-url="javascript:alert(1)">text</div>').toString();
+      expect(result).toContain('data-url="javascript:alert(1)"');
+    });
+  });
 });

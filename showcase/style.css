@@ -113,26 +113,6 @@ p {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.status-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.25rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.status-icon {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.status-secure { color: var(--success); }
-.status-secure .status-icon { background: var(--success); box-shadow: 0 0 10px var(--success); }
-
-.status-blocked { color: var(--danger); }
-.status-blocked .status-icon { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
 
 ul {
   padding-left: 1.5rem;

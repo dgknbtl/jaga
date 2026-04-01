@@ -35,7 +35,7 @@
     "dev": "vite",
     "build": "vite build && tsc --emitDeclarationOnly --outDir dist",
     "test": "vitest run",
-    "showcase": "vite showcase",
+    "showcase": "vite showcase --config vite.config.ts",
     "lint": "tsc --noEmit"
   },
   "keywords": [

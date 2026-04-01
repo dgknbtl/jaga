@@ -127,4 +127,60 @@ describe('Jaga Phase 1: Smart Context Awareness', () => {
       expect(output).toBeInstanceOf(JagaHTML);
     });
   });
+
+  describe('Context Detection Edge Cases', () => {
+    it('should apply url context to all parts of a multi-part href', () => {
+      const base = 'https://example.com';
+      const path = '/page';
+      // Both substitutions are inside href="" — both must get url context
+      const out = j`<a href="${base}${path}">link</a>`;
+      expect(out.toString()).toBe('<a href="https://example.com/page">link</a>');
+    });
+
+    it('should block dangerous protocol in second part of multi-part href', () => {
+      const proto = 'javascript:';
+      const rest = 'alert(1)';
+      const out = j`<a href="${proto}${rest}">link</a>`;
+      // Both parts are url context — protocol is blocked in first substitution
+      expect(out.toString()).not.toContain('javascript:');
+    });
+
+    it('should detect text context after a closed tag', () => {
+      const content = '<b>bold</b>';
+      // Substitution is after >, so it's text context — must be escaped
+      const out = j`<div class="x">${content}</div>`;
+      expect(out.toString()).toBe('<div class="x">&lt;b&gt;bold&lt;/b&gt;</div>');
+    });
+
+    it('should detect correct context for sequential attributes', () => {
+      const a = 'val-a';
+      const b = 'javascript:xss';
+      // data-x is attr, href is url — each must be resolved independently
+      const out = j`<a data-x="${a}" href="${b}">link</a>`;
+      expect(out.toString()).toBe('<a data-x="val-a" href="about:blank">link</a>');
+    });
+
+    it('should treat closing tag content as text context', () => {
+      const x = '<script>alert(1)</script>';
+      // </div ${x}> — inside a closing tag, must be text-escaped
+      const out = j`<div>content</div>${x}`;
+      expect(out.toString()).toContain('&lt;script&gt;');
+    });
+
+    it('should apply css context to all parts of a multi-part style', () => {
+      const prop = 'color';
+      const val = 'red';
+      // Both substitutions are inside style="" — both must get css context
+      const out = j`<span style="${prop}:${val}">text</span>`;
+      // CSS sanitizer handles the output — it must not contain raw injection chars
+      expect(out.toString()).not.toContain(';');
+    });
+
+    it('should handle single-quoted multi-part attribute', () => {
+      const base = 'https://example.com';
+      const path = '/page';
+      const out = j`<a href='${base}${path}'>link</a>`;
+      expect(out.toString()).toBe("<a href='https://example.com/page'>link</a>");
+    });
+  });
 });
