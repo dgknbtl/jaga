@@ -12,18 +12,12 @@ export function unsafe(str: string): JagaHTML {
  * Generates a cryptographically strong nonce for CSP.
  */
 export function nonce(): string {
-  if (typeof crypto !== 'undefined') {
-    const arr = new Uint8Array(16);
-    crypto.getRandomValues(arr);
-    return btoa(String.fromCharCode(...arr));
+  if (typeof crypto === 'undefined' || typeof crypto.getRandomValues !== 'function') {
+    throw new Error('[Jaga] nonce() requires the Web Crypto API (Node.js >= 15 or any modern browser).');
   }
-  
-  // Fallback for Node 10 or environments without crypto
-  let res = '';
-  for (let i = 0; i < 16; i++) {
-    res += String.fromCharCode(Math.floor(Math.random() * 256));
-  }
-  return btoa(res);
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return btoa(String.fromCharCode(...arr));
 }
 
 /**

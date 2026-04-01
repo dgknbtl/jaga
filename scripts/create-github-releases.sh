@@ -2,14 +2,17 @@
 set -euo pipefail
 
 # Jaga GitHub Release Script
-# Title:  🛡️ Jaga vX.X.X
-# Notes:  Release type + raw changeset entries under "### Changelog"
+
+if ! command -v gh &> /dev/null; then
+  echo "Error: 'gh' CLI is required. Install it from https://cli.github.com/" >&2
+  exit 1
+fi
 
 VERSION=$(node -p "require('./package.json').version")
 TAG="v$VERSION"
 
 if [ -z "$VERSION" ]; then
-  echo "Could not determine version from package.json."
+  echo "Error: Could not determine version from package.json." >&2
   exit 1
 fi
 
@@ -24,9 +27,9 @@ else
   PREV_MAJOR=$(echo "$PREV_VERSION" | cut -d. -f1)
   PREV_MINOR=$(echo "$PREV_VERSION" | cut -d. -f2)
 
-  if [ "$CUR_MAJOR" -gt "$PREV_MAJOR" ]; then
+  if [ "$((CUR_MAJOR))" -gt "$((PREV_MAJOR))" ]; then
     RELEASE_TYPE="major"
-  elif [ "$CUR_MINOR" -gt "$PREV_MINOR" ]; then
+  elif [ "$((CUR_MINOR))" -gt "$((PREV_MINOR))" ]; then
     RELEASE_TYPE="minor"
   else
     RELEASE_TYPE="patch"
@@ -35,32 +38,23 @@ fi
 
 echo "Preparing Jaga Release: $TAG ($RELEASE_TYPE)"
 
-# Extract raw notes from CHANGELOG.md, strip the "### Patch Changes" sub-header
-PATCH_NOTES=$(awk "/^## $VERSION/{if(f)exit;f=1;next}f" CHANGELOG.md \
+# Extract changelog notes for this version
+PATCH_NOTES=$(awk "/^## $VERSION/{f=1;next} f && /^## /{exit} f{print}" CHANGELOG.md \
   | grep -v "^### Patch Changes" \
   | grep -v "^### Minor Changes" \
   | grep -v "^### Major Changes" \
   | sed '/^[[:space:]]*$/{ N; /^\n$/d; }')
 
 if [ -z "$PATCH_NOTES" ]; then
-  PATCH_NOTES=$(sed -n "/^## $VERSION/,\$p" CHANGELOG.md | sed '1d' \
-    | grep -v "^### Patch Changes" \
-    | grep -v "^### Minor Changes" \
-    | grep -v "^### Major Changes")
+  echo "Error: Could not extract changelog notes for version $VERSION." >&2
+  exit 1
 fi
 
 RELEASE_TYPE_LABEL=$(echo "$RELEASE_TYPE" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')
 
-RELEASE_TITLE="$TAG"
 RELEASE_BODY="**Release Type:** $RELEASE_TYPE_LABEL
 
 ### Changelog
 $PATCH_NOTES"
 
-if command -v gh &> /dev/null; then
-  gh release create "$TAG" --title "$RELEASE_TITLE" --notes "$RELEASE_BODY"
-else
-  echo "Title: $RELEASE_TITLE"
-  echo "---"
-  echo "$RELEASE_BODY"
-fi
+gh release create "$TAG" --title "$TAG" --notes "$RELEASE_BODY"

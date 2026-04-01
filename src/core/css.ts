@@ -206,6 +206,7 @@ const validateValue = (v: CSSValue): boolean => {
     if (!SAFE_FUNCTIONS.has(v.name)) return false;
     if (v.name === "url")
       return (
+        v.args.length === 1 &&
         v.args[0]?.[0]?.type === "string" &&
         isSafeURL((v.args[0][0] as any).value)
       );

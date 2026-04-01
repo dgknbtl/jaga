@@ -53,6 +53,9 @@
     "zero-dependency",
     "vanilla-js"
   ],
+  "engines": {
+    "node": ">=15"
+  },
   "author": "Dogukan Batal <dogukanbatal@gmail.com>",
   "license": "MIT",
   "devDependencies": {

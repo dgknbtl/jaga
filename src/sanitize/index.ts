@@ -64,7 +64,7 @@ function safeUrl(value: string): string {
     return 'about:blank';
   }
   
-  return trimmed.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  return decoded.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
 function escapeText(text: string): string {
@@ -122,7 +122,6 @@ function parse(
     }
     if (!allowedTags.has(name)) return;
     const attrStr = buildAttrs(name, attrs, mergedAttrs);
-    const selfClosing = ['br', 'hr', 'img', 'input'].includes(name);
     parts.push(`<${name}${attrStr}>`);
   };
 

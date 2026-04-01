@@ -42,11 +42,12 @@ Select `patch`/`minor`/`major` and write a summary. This is auto-committed.
 ```bash
 git push
 ```
-**Required before Step 4** so the GitHub Changelog plugin can find the commits.
+> **Required before Step 4.** `@changesets/changelog-github` uses the GitHub API to resolve commits into PR links and author names. If you run `changeset version` before pushing, entries will fall back to plain commit hashes.
 
 ### Step 4: Bump versions
 ```bash
-GITHUB_TOKEN=$(gh auth token) npx changeset version
+export GITHUB_TOKEN=$(gh auth token)
+npx changeset version
 ```
 - Updates `package.json` and `CHANGELOG.md`.
 - Uses GitHub API to link PRs/authors.
@@ -75,21 +76,52 @@ Run the automation script to create the release:
 ./scripts/create-github-releases.sh
 ```
 
-This creates the release with:
-- **Title**: `🛡️ Jaga vX.X.X`
-- **Body**: `### Changelog` section with raw changeset entries (commit links and summaries).
+This creates the base release with `**Release Type:**` and `### Changelog` only.
 
-**Agent Step:** If this release contains significant architectural or security changes, the agent will additionally prepend the following sections **before** `### Changelog` using `gh release edit`:
+### Step 9: Agent Release Note Analysis
 
-```markdown
-### Core Breakthroughs
-* **Feature Name:** Description of the architectural change.
+After Step 8, the agent analyzes the diff between the previous tag and the new tag, then enriches the release notes using `gh release edit` if applicable.
 
-### Security Posture
-* **Fix/Enhancement:** Description of the security improvement.
+**How to trigger:** After Step 8 completes, tell the agent:
+```
+analyze and enrich the release notes
 ```
 
-These sections are **only added when applicable**. A documentation-only release will have just `### Changelog`.
+**What the agent does:**
+
+1. Runs `git diff <prev-tag>...<new-tag> -- src/` to inspect actual code changes.
+2. Reads commit messages between the two tags.
+3. Decides which sections to include based on release type and content:
+
+| Release type | Sections added |
+|---|---|
+| `patch` | `### Security Posture` — only if security-related fixes are present |
+| `minor` | `### Core Breakthroughs` — for new features or API additions |
+| `major` | Both sections always |
+
+4. Prepends the applicable sections **before** `### Changelog` using:
+```bash
+gh release edit <tag> --notes "<enriched body>"
+```
+
+**Output format:**
+
+```markdown
+**Release Type:** Patch
+
+### Security Posture
+- **Fix name:** What was fixed and why it matters security-wise.
+
+### Changelog
+- [`abc123`](...) Thanks @dgknbtl! - ...
+```
+
+**Rules for the agent:**
+- Write in English, one bullet per fix/feature.
+- Be specific: name the function, file, or attack vector — not vague summaries.
+- Only include `### Core Breakthroughs` if there is a genuine architectural change (new module, new context support, new API surface).
+- Only include `### Security Posture` if there is a concrete vulnerability fix or hardening — not refactors.
+- If neither section applies (docs-only, chore, config change), skip Step 9 entirely.
 
 ---
 
@@ -99,11 +131,13 @@ These sections are **only added when applicable**. A documentation-only release 
 # After code is committed:
 npx changeset                                        # declare
 git push                                             # push intent
-GITHUB_TOKEN=$(gh auth token) npx changeset version  # bump
+export GITHUB_TOKEN=$(gh auth token)                 # export token
+npx changeset version                                # bump
 npm run build                                        # verify integrity
 npx changeset publish                                # publish + tag
 git push --follow-tags                               # push tag
 ./scripts/create-github-releases.sh                  # create GitHub release
+# → then tell the agent: "analyze and enrich the release notes"
 ```
 
 ## Rules
