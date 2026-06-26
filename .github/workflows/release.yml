@@ -33,13 +33,17 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm ci
       - run: npm test
+      # Build before the action so dist/ exists for publish. On a "version"
+      # run this is harmless; on a "publish" run main already carries the
+      # bumped version, so __VERSION__ is injected correctly.
+      - run: npm run build
       # Either opens/updates the "Version Packages" PR (when changesets are
-      # pending) or, once that PR is merged, builds with the bumped version
-      # and publishes to npm. Auth is tokenless via OIDC trusted publishing
-      # (configured on npmjs.com) — provenance is generated automatically.
+      # pending) or, once that PR is merged, publishes to npm. Auth is
+      # tokenless via OIDC trusted publishing (configured on npmjs.com) —
+      # provenance is generated automatically.
       - uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:
           version: npx changeset version
-          publish: npm run build && npx changeset publish
+          publish: npx changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
