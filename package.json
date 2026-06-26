@@ -36,7 +36,12 @@
     "build": "vite build && tsc --emitDeclarationOnly --outDir dist",
     "test": "vitest run",
     "showcase": "vite showcase --config vite.config.ts",
-    "lint": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "size": "node scripts/check-size.mjs"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "keywords": [
     "xss",
